@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+
+  tasks:
+    - name: Collect package facts.
+      package_facts:
+        manager: "auto"
+
+    - name: Verify Docker is installed.
+      assert:
+        that:
+          - "'docker-ce' in ansible_facts.packages"
+        success_msg: "docker is installed."
+        fail_msg: "docker is not installed."

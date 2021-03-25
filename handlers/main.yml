@@ -1,0 +1,13 @@
+---
+- name: restart docker
+  service:
+    name: docker
+    state: restarted
+
+- name: add whoami user to docker group
+  user:
+    name: "{{ docker_username.stdout }}"
+    groups: docker
+    append: true
+    update_password: on_create
+  become: true
