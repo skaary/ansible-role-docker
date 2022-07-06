@@ -2,7 +2,7 @@
 skip_list:
   - 'yaml'
   - 'risky-shell-pipe'
-  # - 'command-instead-of-module'
+  - 'command-instead-of-module'
   - 'fqcn-builtins'
   
 warn_list:
