@@ -81,16 +81,17 @@
     name: docker
     state: present
 
-- name: set current username
-  command: whoami
-  register: docker_username
-  check_mode: false
-  changed_when: false
-  when: whoami
-  notify: add whoami user to docker group
+# - name: set current username
+#   command: whoami
+#   register: docker_username
+#   check_mode: false
+#   changed_when: false
+#   when: whoami
+#   notify: add whoami user to docker group
 
 - include_tasks: docker_compose.yml
   when: docker_install_compose | bool
 
 - include_tasks: docker_users.yml
-  when: docker_users | length > 0 and not whoami
+  when: docker_users | length > 0
+  # when: docker_users | length > 0 and not whoami
