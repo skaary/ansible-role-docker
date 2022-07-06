@@ -3,11 +3,41 @@
   apt:
     name: "{{ docker_old_packages }}"
     state: absent
+  become: true
 
 - name: ensure packages exist to allow apt to use HTTPS for repositories
   apt:
     name: "{{ docker_repo_req_packages }}"
     state: present
+  become: true
+
+- name: determine whether it's Ubuntu or Linux Mint
+  set_fact:
+    distribution: "{{ ansible_distribution | lower }}"
+
+- name: fetch Ubuntu codename in Linux Mint
+  shell: sed 's/UBUNTU_CODENAME=//;t;d' /etc/os-release
+  register: os_release
+  run_once: true
+  when: distribution == "linux mint"
+
+- name: set_fact for codename | Linux Mint
+  set_fact:
+    codename: "{{ os_release.stdout }}"
+  when: distribution == "linux mint"
+
+- name: set_fact for codename | Ubuntu
+  set_fact:
+    codename: "{{ ansible_facts['lsb']['codename'] }}"
+  when: distribution == "ubuntu"
+
+- name: set_fact for docker_apt_repository
+  set_fact:
+    docker_apt_repository: "deb [arch={{ docker_apt_arch }}] {{ docker_repo_url }}/ubuntu {{ codename }} {{ docker_apt_release_channel }}"
+
+- name: set_fact for docker_apt_gpg_key
+  set_fact:
+    docker_apt_gpg_key: "{{ docker_repo_url }}/ubuntu/gpg"
 
 - name: add docker gpg key.
   apt_key:
@@ -19,10 +49,13 @@
   become: true
 
 - name: ensure curl is present (on older systems without SNI)
-  package: name=curl state=present
+  apt:
+    name: curl
+    state: present
   when: add_repository_key is failed
+  become: true
 
-- name: Add Docker apt key (alternative for older systems without SNI).
+- name: add Docker apt key (alternative for older systems without SNI).
   shell: >
     curl -sSL {{ docker_apt_gpg_key }} | sudo apt-key add -
   args:
@@ -41,6 +74,7 @@
     name: "{{ docker_ce_packages }}"
     state: present
   # notify: restart docker
+  become: true
 
 - name: create docker group
   group:
