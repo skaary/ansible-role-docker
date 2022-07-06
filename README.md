@@ -3,34 +3,71 @@
 
 An Ansible Role that installs [Docker](https://www.docker.com/) on Linux.
 
-optionally docker-compose
+<!-- optionally docker-compose
 can choose between stable or nightly release channel
 compose version needs to be updated manually
-to test if docker is working correctly run xx
+to test if docker is working correctly run xx -->
 
 ## Installation
 
 Download the role directly from git by typing into your terminal:
 
 ```bash
-$ ansible-galaxy install git+https://github.com/skaary/ansible-role-anki.git
+$ ansible-galaxy install git+https://github.com/skaary/ansible-role-docker.git
 ```
+
 or
 
 ```bash
-$ ansible-galaxy install git+https://github.com/skaary/ansible-role-anki.git,,anki
+$ ansible-galaxy install git+https://github.com/skaary/ansible-role-docker.git,,docker
 ```
 
-to change the installed role name from _ansible-role-anki_ to just _anki_.
+to change the installed role name from _ansible-role-docker_ to just _docker_.
 
 Alternatively, install the role via a _requirements.yml_ file, e.g. when installing multiple roles at once. See [ansible galaxy documentation](https://galaxy.ansible.com/docs/using/installing.html#installing-multiple-roles-from-a-file) for more information.
+
+## Role variables
+
+Available variables are listed below, along with default values (see `defaults/main.yml`):
+
+```yaml
+    docker_install_compose: true
+    docker_compose_version: "v2.4.1"
+    docker_compose_arch: x86_64
+    docker_compose_path: /usr/local/bin/docker-compose
+```
+
+Docker Compose installation options.
+
+> Note: The docker compose version variable needs to be updated manually to ensure the most recent version will be installed. See [Docker Compose release notes](https://docs.docker.com/compose/release-notes/) for more information.
+
+```yaml
+    docker_repo_url: https://download.docker.com/linux
+```
+
+The main Docker repo URL.
+
+```yaml
+    docker_apt_release_channel: stable
+    docker_apt_arch: amd64
+```
+
+You can switch the release channel to `nightly` if you want to use the [Nightly release](https://docker-docs.uclv.cu/engine/install/#release-channels).
+
+```yaml
+    docker_users:
+      - user1
+      - user2
+```
+
+A list of system users to be added to the `docker` group (so they can use Docker on the server).
 
 ## Example playbook
 
 ```yaml
 - hosts: all
   roles:
-    - ansible-role-anki
+    - ansible-role-docker
 ```
 
 ## Testing the role
